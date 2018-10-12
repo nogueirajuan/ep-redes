@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author nogueirajuan
+ * @author gjuni
  */
 public class FrameServidor extends javax.swing.JFrame {
 

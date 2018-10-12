@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author nogueirajuan
+ * @author gjuni
  */
 public class RecebeSinal extends Thread{
     protected static Socket s;

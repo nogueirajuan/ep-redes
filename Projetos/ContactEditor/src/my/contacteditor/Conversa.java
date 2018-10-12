@@ -17,21 +17,21 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
-/**
- *
- * @author gjuni
- */
 public class Conversa extends Thread{
     private Socket conexao=null;
     protected static JLabel label1;
     protected static JTextArea jTextArea2;
     protected static String nomeAmigo;
-    public Conversa (Socket s, JLabel label1, JTextArea jTextArea2, String nomeAmigo){
+    protected static Mensagem msg;
+    
+    public Conversa (Socket s, JLabel label1, JTextArea jTextArea2, String nomeAmigo, Mensagem msg){
         conexao=s;
         Conversa.label1=label1;
         Conversa.jTextArea2=jTextArea2;
         Conversa.nomeAmigo=nomeAmigo;
+        this.msg = msg;
     }
+    
     @Override
     public void run(){
         ObjectInputStream ois=null;
@@ -41,7 +41,19 @@ public class Conversa extends Thread{
                 String mensagemRecebida = (String) ois.readObject();
                 System.out.println(mensagemRecebida);
                 // Imprime
-                jTextArea2.append(nomeAmigo + " diz: " +mensagemRecebida +"\n");
+                
+                if(Mensagem.CABECALHO_JOGO.equals(mensagemRecebida.substring(0, 1))){
+                    int x = Integer.parseInt("" + mensagemRecebida.charAt(1));
+                    int y = Integer.parseInt("" + mensagemRecebida.charAt(2));
+                    this.msg.realizaJogada(x, y);
+                    this.msg.verificaGanhador(x, y);
+                }
+                
+                if(Mensagem.CABECALHO_MSG.equals(mensagemRecebida.substring(0, 1))){
+                    mensagemRecebida = mensagemRecebida.substring(1, mensagemRecebida.length()-1);
+                    jTextArea2.append(nomeAmigo + " diz: " +mensagemRecebida +"\n");
+                }
+                
             }
             catch (SocketException e){
                 break;

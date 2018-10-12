@@ -1,4 +1,8 @@
-
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package my.contacteditor;
 
 import java.io.DataOutputStream;
@@ -13,7 +17,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author nogueirajuan
+ * @author gjuni
  */
 public class JanelaContatos extends javax.swing.JFrame{
     public static String [] vetorDisponiveis=new String[0];

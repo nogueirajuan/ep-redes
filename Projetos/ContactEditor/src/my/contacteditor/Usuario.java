@@ -10,7 +10,7 @@ import java.net.Socket;
 
 /**
  *
- * @author nogueirajuan
+ * @author gjuni
  */
 public class Usuario {
     String nome;

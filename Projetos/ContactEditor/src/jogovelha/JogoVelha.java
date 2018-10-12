@@ -1,23 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package my.contacteditor;
+package jogovelha;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
-public class Mensagem extends javax.swing.JFrame {
-    
-    //Controladores do Jogos
+public class JogoVelha extends javax.swing.JFrame {
+
     private int[][] tabuleiro = new int[3][3];
     private JButton[][] btnTabuleiro = new JButton[3][3];
     private int NUMERO_X = 1;
@@ -27,32 +15,9 @@ public class Mensagem extends javax.swing.JFrame {
     private int TURNO_2 = 2;
     private int turno = TURNO_1;
     private Cronometro cronometro;
-    
-    //Gerenciadores msg
-    public static String CABECALHO_MSG = "1";
-    public static String CABECALHO_JOGO = "2";
-    public static String INDICE_POS_X = "1";
-    public static String INDICE_POS_Y = "2";
-    
-    public static String usuarioRecebido;
-    public static String nomeAmigo;
-    public static Thread threadConversa;
-    //public static String usuarioSelecionado;
-    public static Socket iniciaConversa;
-    /**
-     * Creates new form Mensagem
-     */
-    public Mensagem(Socket iniciaConversa, String usuarioRecebido) throws IOException, ClassNotFoundException {
-        Mensagem.iniciaConversa=iniciaConversa;
-        Mensagem.usuarioRecebido=usuarioRecebido;
-        ObjectInputStream ois = new ObjectInputStream (iniciaConversa.getInputStream());
-        nomeAmigo=(String)ois.readObject();
+
+    public JogoVelha() {
         initComponents();
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        threadConversa = new Conversa(iniciaConversa, label1, jTextArea2, nomeAmigo, this);
-        threadConversa.start();
-        
-        //inicializadoresJogo
         this.cronometro = new Cronometro(this);
         iniciarMatriz();
         iniciarMatrizBotoes();
@@ -173,20 +138,10 @@ public class Mensagem extends javax.swing.JFrame {
         }
     }
     
-    private void enviaMensagemJogo(int x, int y){
-        try {
-            ObjectOutputStream oos = new ObjectOutputStream (iniciaConversa.getOutputStream());
-            oos.writeObject("" + CABECALHO_JOGO + x + y);
-        } catch (IOException ex) {
-            Logger.getLogger(Mensagem.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jInternalFrame1 = new javax.swing.JInternalFrame();
         jPanel1 = new javax.swing.JPanel();
         btnPos1 = new javax.swing.JButton();
         btnPos3 = new javax.swing.JButton();
@@ -204,21 +159,8 @@ public class Mensagem extends javax.swing.JFrame {
         btnJogarNovamente = new javax.swing.JButton();
         lblJogador1 = new javax.swing.JLabel();
         lblJogador2 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
-        label1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
 
-        jInternalFrame1.setVisible(true);
-        jInternalFrame1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jInternalFrame1MouseExited(evt);
-            }
-        });
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         btnPos1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         btnPos1.setText("X");
@@ -367,13 +309,6 @@ public class Mensagem extends javax.swing.JFrame {
         lblJogador2.setForeground(new java.awt.Color(0, 153, 0));
         lblJogador2.setText("Jogador 2");
 
-        jButton2.setText("Fechar mensagem");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -384,6 +319,7 @@ public class Mensagem extends javax.swing.JFrame {
                     .addComponent(btnJogarNovamente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblTempo)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(lblV1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -392,20 +328,14 @@ public class Mensagem extends javax.swing.JFrame {
                                 .addComponent(lblV2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lblJogador2)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(lblTempo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
-                        .addComponent(jButton2)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblTempo)
-                    .addComponent(jButton2))
+                .addComponent(lblTempo)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblV1)
@@ -419,171 +349,72 @@ public class Mensagem extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTextArea2.setEditable(false);
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jScrollPane2.setViewportView(jTextArea2);
-
-        label1.setText(nomeAmigo);
-
-        jButton1.setText("Enviar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(label1)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap())
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(label1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
-        jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
-        jInternalFrame1Layout.setHorizontalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jInternalFrame1Layout.setVerticalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jInternalFrame1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(31, Short.MAX_VALUE))
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jInternalFrame1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jInternalFrame1MouseExited
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jInternalFrame1MouseExited
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        String mensagem = jTextArea1.getText();
-        mensagem = CABECALHO_MSG + mensagem;
-        System.out.println(mensagem);
-        try {
-            ObjectOutputStream oos = new ObjectOutputStream (iniciaConversa.getOutputStream());
-            oos.writeObject(mensagem);
-        } catch (IOException ex) {
-            Logger.getLogger(Mensagem.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        jTextArea2.append(usuarioRecebido + " diz: " +mensagem +"\n");
-        jTextArea1.setText("");
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        this.setVisible(false);
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     private void btnPos1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPos1ActionPerformed
         realizaJogada(0, 0);
-        enviaMensagemJogo(0, 0);
         verificaGanhador(0, 0);
     }//GEN-LAST:event_btnPos1ActionPerformed
 
-    private void btnPos3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPos3ActionPerformed
-        realizaJogada(0, 2);
-        enviaMensagemJogo(0, 2);
-        verificaGanhador(0, 2);
-    }//GEN-LAST:event_btnPos3ActionPerformed
-
     private void btnPos2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPos2ActionPerformed
         realizaJogada(0, 1);
-        enviaMensagemJogo(0, 1);
         verificaGanhador(0, 1);
     }//GEN-LAST:event_btnPos2ActionPerformed
 
+    private void btnPos3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPos3ActionPerformed
+        realizaJogada(0, 2);
+        verificaGanhador(0, 2);
+    }//GEN-LAST:event_btnPos3ActionPerformed
+
     private void btnPos4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPos4ActionPerformed
         realizaJogada(1, 0);
-        enviaMensagemJogo(1, 0);
         verificaGanhador(1, 0);
     }//GEN-LAST:event_btnPos4ActionPerformed
 
     private void btnPos5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPos5ActionPerformed
         realizaJogada(1, 1);
-        enviaMensagemJogo(1, 1);
         verificaGanhador(1, 1);
     }//GEN-LAST:event_btnPos5ActionPerformed
 
     private void btnPos6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPos6ActionPerformed
         realizaJogada(1, 2);
-        enviaMensagemJogo(1, 2);
         verificaGanhador(1, 2);
     }//GEN-LAST:event_btnPos6ActionPerformed
 
     private void btnPos7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPos7ActionPerformed
         realizaJogada(2, 0);
-        enviaMensagemJogo(2, 0);
         verificaGanhador(2, 0);
     }//GEN-LAST:event_btnPos7ActionPerformed
 
     private void btnPos8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPos8ActionPerformed
         realizaJogada(2, 1);
-        enviaMensagemJogo(2, 1);
         verificaGanhador(2, 1);
     }//GEN-LAST:event_btnPos8ActionPerformed
 
     private void btnPos9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPos9ActionPerformed
         realizaJogada(2, 2);
-        enviaMensagemJogo(2, 2);
         verificaGanhador(2, 2);
     }//GEN-LAST:event_btnPos9ActionPerformed
 
@@ -612,26 +443,20 @@ public class Mensagem extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Mensagem.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JogoVelha.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Mensagem.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JogoVelha.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Mensagem.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JogoVelha.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Mensagem.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JogoVelha.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                try {
-                    new Mensagem(iniciaConversa, usuarioRecebido).setVisible(true);
-                } catch (IOException ex) {
-                    Logger.getLogger(Mensagem.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(Mensagem.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                new JogoVelha().setVisible(true);
             }
         });
     }
@@ -647,20 +472,11 @@ public class Mensagem extends javax.swing.JFrame {
     private javax.swing.JButton btnPos7;
     private javax.swing.JButton btnPos8;
     private javax.swing.JButton btnPos9;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
-    private javax.swing.JLabel label1;
     private javax.swing.JLabel lblJogador1;
     private javax.swing.JLabel lblJogador2;
-    private javax.swing.JLabel lblTempo;
+    public javax.swing.JLabel lblTempo;
     private javax.swing.JLabel lblV1;
     private javax.swing.JLabel lblV2;
     // End of variables declaration//GEN-END:variables

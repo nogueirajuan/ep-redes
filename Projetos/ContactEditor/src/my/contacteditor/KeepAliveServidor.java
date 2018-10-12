@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author nogueirajuan
+ * @author gjuni
  */
 public class KeepAliveServidor extends Thread{
     private static Socket s;

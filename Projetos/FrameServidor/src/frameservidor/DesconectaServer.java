@@ -7,7 +7,7 @@ package frameservidor;
 
 /**
  *
- * @author nogueirajuan
+ * @author gjuni
  */
 public class DesconectaServer extends javax.swing.JFrame {
 

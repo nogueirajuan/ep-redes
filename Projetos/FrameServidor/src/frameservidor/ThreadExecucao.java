@@ -1,5 +1,4 @@
 package frameservidor;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,16 +10,15 @@ import java.util.logging.Logger;
  */
 
 /**
- * @author nogueirajuan
+ *
+ * @author gjuni
  */
-public class ThreadExecucao extends Thread {
+public class ThreadExecucao extends Thread{
     protected static Servidor server;
-
-    public ThreadExecucao(Servidor s) {
-        server = s;
+    public ThreadExecucao(Servidor s){
+        server=s;
     }
-
-    public void run() {
+    public void run(){
         try {
             server.execucao();
         } catch (IOException ex) {

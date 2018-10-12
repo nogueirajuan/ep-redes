@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author nogueirajuan
+ * @author gjuni
  */
 public class OuvirConversa extends Thread{
     protected static int portaServidor;
