@@ -16,7 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 public class Mensagem extends javax.swing.JFrame {
-    
+
     //Controladores do Jogos
     private int[][] tabuleiro = new int[3][3];
     private JButton[][] btnTabuleiro = new JButton[3][3];
@@ -26,41 +26,68 @@ public class Mensagem extends javax.swing.JFrame {
     private int TURNO_1 = 1;
     private int TURNO_2 = 2;
     private int turno = TURNO_1;
+    private static int numeroJogador = 1;
     private Cronometro cronometro;
-    
+
     //Gerenciadores msg
     public static String CABECALHO_MSG = "1";
     public static String CABECALHO_JOGO = "2";
+    public static String CABECALHO_NOVO_JOGO = "3";
     public static String INDICE_POS_X = "1";
     public static String INDICE_POS_Y = "2";
-    
+
     public static String usuarioRecebido;
     public static String nomeAmigo;
     public static Thread threadConversa;
     //public static String usuarioSelecionado;
     public static Socket iniciaConversa;
+
     /**
      * Creates new form Mensagem
      */
+    public Mensagem(Socket iniciaConversa, String usuarioRecebido, int numeroJogador) throws IOException, ClassNotFoundException {
+        this(iniciaConversa, usuarioRecebido);
+        this.numeroJogador = numeroJogador;
+        if(numeroJogador == TURNO_1){
+            lblJogador1.setText(usuarioRecebido);
+            lblJogador2.setText(nomeAmigo);
+        }else{
+            lblJogador2.setText(usuarioRecebido);
+            lblJogador1.setText(nomeAmigo);
+        }
+        bloqueiaTabuleiroPeloTurno();
+    }
+
     public Mensagem(Socket iniciaConversa, String usuarioRecebido) throws IOException, ClassNotFoundException {
-        Mensagem.iniciaConversa=iniciaConversa;
-        Mensagem.usuarioRecebido=usuarioRecebido;
-        ObjectInputStream ois = new ObjectInputStream (iniciaConversa.getInputStream());
-        nomeAmigo=(String)ois.readObject();
+        Mensagem.iniciaConversa = iniciaConversa;
+        Mensagem.usuarioRecebido = usuarioRecebido;
+        ObjectInputStream ois = new ObjectInputStream(iniciaConversa.getInputStream());
+        nomeAmigo = (String) ois.readObject();
         initComponents();
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         threadConversa = new Conversa(iniciaConversa, label1, jTextArea2, nomeAmigo, this);
         threadConversa.start();
-        
+
         //inicializadoresJogo
         this.cronometro = new Cronometro(this);
-        iniciarMatriz();
         iniciarMatrizBotoes();
-        iniciaTabuleiroInterface();
-        lblV1.setText("V");
-        lblV2.setText("");
+        novoJogo();
     }
     
+    public int[] procuraPosicaoVazia(){
+        int[] retorno = new int[2];
+        for (int i = 0; i < tabuleiro.length; i++) {
+            for (int j = 0; j < tabuleiro[0].length; j++) {
+                if(tabuleiro[i][j] == NUMERO_VAZIO){
+                    retorno[0] = i;
+                    retorno[1] = j;
+                    return retorno;
+                }
+            }
+        }
+        return null;
+    }
+
     public void iniciarMatrizBotoes() {
         btnTabuleiro[0][0] = btnPos1;
         btnTabuleiro[0][1] = btnPos2;
@@ -71,6 +98,17 @@ public class Mensagem extends javax.swing.JFrame {
         btnTabuleiro[2][0] = btnPos7;
         btnTabuleiro[2][1] = btnPos8;
         btnTabuleiro[2][2] = btnPos9;
+    }
+
+    public boolean verificaEmpate(){
+        for (int i = 0; i < tabuleiro.length; i++) {
+            for (int j = 0; j < tabuleiro[0].length; j++) {
+                if(tabuleiro[i][j] == NUMERO_VAZIO){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
     
     public void verificaGanhador(int x, int y) {
@@ -116,12 +154,21 @@ public class Mensagem extends javax.swing.JFrame {
             btnVencedor2.setBackground(Color.GREEN);
             btnVencedor3.setBackground(Color.GREEN);
 
-            cronometro.zeraTimer();
-
             if (turno == TURNO_1) {
                 JOptionPane.showMessageDialog(this, "Vencedor: Jogador 2");
             } else {
                 JOptionPane.showMessageDialog(this, "Vencedor: Jogador 1");
+            }
+            this.cronometro.paraCronometro();
+            this.cronometro.interrupt();
+            this.dispose();
+        }else{
+            if(verificaEmpate()){
+                cronometro.zeraTimer();
+                JOptionPane.showMessageDialog(this, "Jogo empatado");
+                this.cronometro.paraCronometro();
+                this.cronometro.interrupt();
+                this.dispose();
             }
         }
     }
@@ -139,6 +186,22 @@ public class Mensagem extends javax.swing.JFrame {
             for (int j = 0; j < tabuleiro[0].length; j++) {
                 btnTabuleiro[i][j].setText("");
                 btnTabuleiro[i][j].setBackground(Color.gray);
+            }
+        }
+    }
+
+    public void bloqueiaTabuleiroPeloTurno() {
+        for (int i = 0; i < tabuleiro.length; i++) {
+            for (int j = 0; j < tabuleiro[0].length; j++) {
+                if (tabuleiro[i][j] == NUMERO_VAZIO) {
+                    if (numeroJogador == turno) {
+                        btnTabuleiro[i][j].setEnabled(true);
+                    } else {
+                        btnTabuleiro[i][j].setEnabled(false);
+                    }
+                }else{
+                    btnTabuleiro[i][j].setEnabled(false);
+                }
             }
         }
     }
@@ -163,6 +226,7 @@ public class Mensagem extends javax.swing.JFrame {
                 lblV2.setText("");
             }
 
+            bloqueiaTabuleiroPeloTurno();
             this.cronometro.resetTimer();
 
             if (!this.cronometro.isAlive()) {
@@ -172,16 +236,45 @@ public class Mensagem extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Posicao ja marcada");
         }
     }
-    
-    private void enviaMensagemJogo(int x, int y){
+
+    public void enviaMensagemNovoJogo() {
         try {
-            ObjectOutputStream oos = new ObjectOutputStream (iniciaConversa.getOutputStream());
+            ObjectOutputStream oos = new ObjectOutputStream(iniciaConversa.getOutputStream());
+            oos.writeObject(CABECALHO_NOVO_JOGO);
+        } catch (IOException ex) {
+            Logger.getLogger(Mensagem.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void enviaMensagemJogo(int x, int y) {
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(iniciaConversa.getOutputStream());
             oos.writeObject("" + CABECALHO_JOGO + x + y);
         } catch (IOException ex) {
             Logger.getLogger(Mensagem.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    public void novoJogo() {
+        turno = TURNO_1;
+        iniciaTabuleiroInterface();
+        iniciarMatriz();
+        cronometro.resetTimer();
+        
+        lblV1.setText("V");
+        lblV2.setText("");
+        bloqueiaTabuleiroPeloTurno();
+    }
+
+    public void jogadaCronometroZerado(){
+        if(numeroJogador == turno){
+            int[] pos = procuraPosicaoVazia();
+            realizaJogada(pos[0], pos[1]);
+            enviaMensagemJogo(pos[0], pos[1]);
+            verificaGanhador(pos[0], pos[1]);
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -201,7 +294,6 @@ public class Mensagem extends javax.swing.JFrame {
         lblTempo = new javax.swing.JLabel();
         lblV1 = new javax.swing.JLabel();
         lblV2 = new javax.swing.JLabel();
-        btnJogarNovamente = new javax.swing.JButton();
         lblJogador1 = new javax.swing.JLabel();
         lblJogador2 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
@@ -351,14 +443,6 @@ public class Mensagem extends javax.swing.JFrame {
         lblV2.setForeground(new java.awt.Color(0, 153, 0));
         lblV2.setText("O");
 
-        btnJogarNovamente.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnJogarNovamente.setText("Novo Jogo");
-        btnJogarNovamente.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnJogarNovamenteActionPerformed(evt);
-            }
-        });
-
         lblJogador1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         lblJogador1.setForeground(new java.awt.Color(0, 0, 204));
         lblJogador1.setText("Jogador 1");
@@ -381,7 +465,6 @@ public class Mensagem extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnJogarNovamente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -414,9 +497,7 @@ public class Mensagem extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblV2)
                     .addComponent(lblJogador2))
-                .addGap(18, 18, 18)
-                .addComponent(btnJogarNovamente, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(67, Short.MAX_VALUE))
         );
 
         jTextArea2.setEditable(false);
@@ -492,7 +573,7 @@ public class Mensagem extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -519,12 +600,12 @@ public class Mensagem extends javax.swing.JFrame {
         mensagem = CABECALHO_MSG + mensagem;
         System.out.println(mensagem);
         try {
-            ObjectOutputStream oos = new ObjectOutputStream (iniciaConversa.getOutputStream());
+            ObjectOutputStream oos = new ObjectOutputStream(iniciaConversa.getOutputStream());
             oos.writeObject(mensagem);
         } catch (IOException ex) {
             Logger.getLogger(Mensagem.class.getName()).log(Level.SEVERE, null, ex);
         }
-        jTextArea2.append(usuarioRecebido + " diz: " +mensagem +"\n");
+        jTextArea2.append(usuarioRecebido + " diz: " + mensagem + "\n");
         jTextArea1.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -587,14 +668,6 @@ public class Mensagem extends javax.swing.JFrame {
         verificaGanhador(2, 2);
     }//GEN-LAST:event_btnPos9ActionPerformed
 
-    private void btnJogarNovamenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJogarNovamenteActionPerformed
-        iniciaTabuleiroInterface();
-        iniciarMatriz();
-        cronometro.resetTimer();
-        lblV1.setText("V");
-        lblV2.setText("");
-    }//GEN-LAST:event_btnJogarNovamenteActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -626,7 +699,7 @@ public class Mensagem extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    new Mensagem(iniciaConversa, usuarioRecebido).setVisible(true);
+                    new Mensagem(iniciaConversa, usuarioRecebido, numeroJogador).setVisible(true);
                 } catch (IOException ex) {
                     Logger.getLogger(Mensagem.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (ClassNotFoundException ex) {
@@ -637,7 +710,6 @@ public class Mensagem extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnJogarNovamente;
     private javax.swing.JButton btnPos1;
     private javax.swing.JButton btnPos2;
     private javax.swing.JButton btnPos3;

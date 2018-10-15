@@ -49,6 +49,10 @@ public class Conversa extends Thread{
                     this.msg.verificaGanhador(x, y);
                 }
                 
+                if(Mensagem.CABECALHO_NOVO_JOGO.equals(mensagemRecebida.substring(0, 1))){
+                    this.msg.novoJogo();
+                }
+                
                 if(Mensagem.CABECALHO_MSG.equals(mensagemRecebida.substring(0, 1))){
                     mensagemRecebida = mensagemRecebida.substring(1, mensagemRecebida.length()-1);
                     jTextArea2.append(nomeAmigo + " diz: " +mensagemRecebida +"\n");

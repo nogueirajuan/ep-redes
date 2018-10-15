@@ -19,10 +19,12 @@ import java.util.logging.Logger;
 public class OuvirConversa extends Thread{
     protected static int portaServidor;
     protected static String usuarioSelecionado;
+    
     public OuvirConversa(int portaServidor, String usuarioSelecionado){
         OuvirConversa.portaServidor=portaServidor;
         OuvirConversa.usuarioSelecionado=usuarioSelecionado;
     }
+    
     @Override
     public void run(){
         ServerSocket welcomeSocket=null;
@@ -38,7 +40,7 @@ public class OuvirConversa extends Thread{
                 } catch (IOException ex) {
                     Logger.getLogger(JanelaContatos.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                new Mensagem(socketAmigo, usuarioSelecionado).setVisible(true);
+                new Mensagem(socketAmigo, usuarioSelecionado, 2).setVisible(true);
             }
         }
         catch (IOException ex) {

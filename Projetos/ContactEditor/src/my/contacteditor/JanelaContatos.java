@@ -232,7 +232,7 @@ public class JanelaContatos extends javax.swing.JFrame{
             try {
                 iniciaConversa = new Socket (ipAmigo, portaAmigo);
                 String nomeCompleto = vetorNomeAmigo[0] + " " + vetorNomeAmigo[1];
-                new Mensagem(iniciaConversa, usuarioSelecionado).setVisible(true);
+                new Mensagem(iniciaConversa, usuarioSelecionado, 1).setVisible(true);
                 ObjectOutputStream oos;
                 oos = new ObjectOutputStream(iniciaConversa.getOutputStream());
                 oos.writeObject(usuarioSelecionado);

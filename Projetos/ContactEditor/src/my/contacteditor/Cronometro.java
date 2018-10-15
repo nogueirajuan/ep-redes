@@ -21,6 +21,10 @@ public class Cronometro extends Thread {
     public void zeraTimer() {
         this.i = 0;
     }
+    
+    public void paraCronometro(){
+        this.paraCronometro = true;
+    }
 
     @Override
     public void run() {
@@ -33,6 +37,8 @@ public class Cronometro extends Thread {
                         label.atualizarJLabel("00:0" + i);
                     }
                     i--;
+                }else{
+                    label.jogadaCronometroZerado();
                 }
                 Thread.sleep(1000);
             }
